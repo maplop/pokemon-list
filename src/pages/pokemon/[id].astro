@@ -1,0 +1,33 @@
+---
+import type { GetStaticPaths } from "astro";
+import MainLayout from "@layouts/MainLayout.astro";
+import PokemonCard from "@components/PokemonCard.astro";
+
+export const getStaticPaths = (async () => {
+  const resp = await fetch("https://pokeapi.co/api/v2/pokemon?limit=151");
+  const { results } = (await resp.json()) as PokemonResponse;
+
+  return results.map((pokemon) => {
+    const id = pokemon.url.split("/").at(-2);
+    return {
+      params: { id: id },
+      props: { pokemon },
+    };
+  });
+}) satisfies GetStaticPaths;
+
+const { id } = Astro.params;
+const { pokemon } = Astro.props;
+const audioSrc = `https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/${id}.ogg`;
+---
+
+<MainLayout title="Un Pokemonn">
+  <section>
+    <a href="/">Regresar</a>
+    <h1>{id} {pokemon.name}</h1>
+    <PokemonCard pokemon={pokemon} isBig />
+    <audio controls class="mt-2">
+      <source src={audioSrc} type="audio/ogg" />
+    </audio>
+  </section>
+</MainLayout>

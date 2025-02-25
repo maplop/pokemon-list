@@ -1,0 +1,15 @@
+---
+import PokemonCard from "./PokemonCard.astro";
+
+const resp = await fetch("https://pokeapi.co/api/v2/pokemon");
+const data = (await resp.json()) as PokemonResponse;
+---
+
+<h1>Lista de Pokémons</h1>
+<hr />
+<section
+  aria-label="Listado de Pokémons"
+  class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mt-4"
+>
+  {data.results.map((pokemon) => <PokemonCard pokemon={pokemon} />)}
+</section>
