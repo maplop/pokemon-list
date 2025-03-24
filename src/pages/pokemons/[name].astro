@@ -1,5 +1,6 @@
 ---
 import type { GetStaticPaths } from "astro";
+import { Icon } from "astro-icon/components";
 import MainLayout from "@layouts/MainLayout.astro";
 import PokemonCard from "@components/PokemonCard.astro";
 
@@ -23,15 +24,72 @@ const imgSrc = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites
 
 <MainLayout
   title=`Pokemon ${id}-${name}`
-  description=`información sobre el pokemon ${name}`
+  description=`Información sobre el pokemon ${name}`
   image={imgSrc}
 >
   <section>
     <a href="/">Regresar</a>
     <h1>{id} {name}</h1>
+    <button id="btn-favorite" data-name={name} data-id={id}>
+      <Icon name={"heart-empty"} data-empty />
+      <Icon class={"hidden"} name={"heart-full"} data-full />
+    </button>
     <PokemonCard pokemon={pokemon} isBig />
     <audio controls class="mt-2">
       <source src={audioSrc} type="audio/ogg" />
     </audio>
   </section>
 </MainLayout>
+
+<script>
+  interface FavoritePokemon {
+    name: string;
+    id: string;
+  }
+
+  const handlePageLoad = () => {
+    let favoritePokemons: FavoritePokemon[] = JSON.parse(
+      localStorage.getItem("favorites") ?? "[]"
+    );
+
+    const btnFavorite = document.querySelector(
+      "#btn-favorite"
+    ) as HTMLButtonElement;
+
+    if (!btnFavorite) return;
+    const { name, id } = btnFavorite.dataset;
+
+    const heartEmpty = btnFavorite.querySelector("[data-empty]") as HTMLElement;
+    const heartFull = btnFavorite.querySelector("[data-full]") as HTMLElement;
+
+    const toggleFavorite = () => {
+      const isFavorite = favoritePokemons.some((fav) => fav.name === name);
+      favoritePokemons = favoritePokemons.filter((fav) => fav.name !== name);
+      if (isFavorite) {
+      } else if (id && name) {
+        favoritePokemons.push({ id: id, name: name });
+      }
+
+      localStorage.setItem("favorites", JSON.stringify(favoritePokemons));
+    };
+
+    btnFavorite.addEventListener("click", () => {
+      heartEmpty.classList.toggle("hidden");
+      heartFull.classList.toggle("hidden");
+      toggleFavorite();
+    });
+
+    btnFavorite.addEventListener("click", () => {
+      console.log("Name y id --- ", name, id);
+    });
+  };
+
+  document.addEventListener("astro:page-load", handlePageLoad);
+</script>
+
+<style>
+  @reference "@styles/global.css";
+  #btn-favorite {
+    @apply hover:animate-pulse;
+  }
+</style>

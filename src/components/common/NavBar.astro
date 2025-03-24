@@ -1,0 +1,32 @@
+---
+import { isRenderTemplateResult } from "astro/runtime/server/render/astro/render-template.js";
+
+const links = [
+  { href: "/", text: "Listado" },
+  { href: "/pokemons/1", text: "Paginado" },
+  { href: "/favoritos", text: "Favoritos" },
+];
+
+const currentPath = Astro.url.pathname;
+---
+
+<script
+  src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js"
+  defer></script>
+<div class="w-full text-white">
+  <nav class="flex justify-center items-center gap-1.5 pb-4">
+    {
+      links.map((link) => (
+        <a
+          class:list={[
+            "px-4 py-2 mt-2 text-sm font-semibold  text-white hover:bg-blue-700 focus:bg-blue-700 rounded-lg",
+            { "bg-blue-700": currentPath === link.href },
+          ]}
+          href={link.href}
+        >
+          {link.text}
+        </a>
+      ))
+    }
+  </nav>
+</div>
