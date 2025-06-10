@@ -1,9 +1,9 @@
 ---
-import { isRenderTemplateResult } from "astro/runtime/server/render/astro/render-template.js";
-
+import { Image } from "astro:assets";
+import pokemonImg from "../../assets/pokemonImg.png";
 const links = [
-  { href: "/", text: "Listado" },
-  { href: "/pokemons/1", text: "Paginado" },
+  { href: "/", text: "Inicio" },
+  { href: "/pokemons/1", text: "Todos" },
   { href: "/favoritos", text: "Favoritos" },
 ];
 
@@ -13,7 +13,8 @@ const currentPath = Astro.url.pathname;
 <script
   src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js"
   defer></script>
-<div class="w-full text-white">
+<div class="flex justify-between items-center w-full text-white pt-4">
+  <Image src={pokemonImg} alt="pokemon-img" width={200} />
   <nav class="flex justify-center items-center gap-1.5 pb-4">
     {
       links.map((link) => (

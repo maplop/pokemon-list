@@ -20,6 +20,8 @@ const { pokemon } = Astro.props;
 const id = pokemon.url.split("/").at(-2);
 const audioSrc = `https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/${id}.ogg`;
 const imgSrc = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
+
+export const prerender = true;
 ---
 
 <MainLayout
@@ -28,7 +30,19 @@ const imgSrc = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites
   image={imgSrc}
 >
   <section>
-    <a href="/">Regresar</a>
+    <button
+      type="button"
+      onclick="
+      if (history.length > 1) {
+        history.back();
+      } else {
+        location.href = '/pokemons/1';
+      }
+    "
+      class="px-4 py-2 mt-2 text-sm font-semibold text-white bg-blue-700 rounded-lg cursor-pointer hover:bg-blue-600"
+    >
+      ← Regresar
+    </button>
     <h1>{id} {name}</h1>
     <button id="btn-favorite" data-name={name} data-id={id}>
       <Icon name={"heart-empty"} data-empty />
@@ -56,11 +70,17 @@ const imgSrc = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites
       "#btn-favorite"
     ) as HTMLButtonElement;
 
-    if (!btnFavorite) return;
-    const { name, id } = btnFavorite.dataset;
-
     const heartEmpty = btnFavorite.querySelector("[data-empty]") as HTMLElement;
     const heartFull = btnFavorite.querySelector("[data-full]") as HTMLElement;
+
+    if (!btnFavorite) return;
+    const { name, id } = btnFavorite.dataset;
+    const isFavorite = favoritePokemons.some((fav) => fav.name === name);
+
+    if (isFavorite) {
+      heartEmpty.classList.add("hidden");
+      heartFull.classList.remove("hidden");
+    }
 
     const toggleFavorite = () => {
       const isFavorite = favoritePokemons.some((fav) => fav.name === name);
