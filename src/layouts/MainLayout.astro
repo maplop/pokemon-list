@@ -1,6 +1,7 @@
 ---
 import "../styles/global.css";
 import NavBar from "@components/common/NavBar.astro";
+import { ClientRouter } from "astro:transitions";
 
 interface Props {
   title?: string;
@@ -19,7 +20,7 @@ const {
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link
       href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css"
@@ -34,10 +35,12 @@ const {
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={image} />
-
+    <ClientRouter />
     <title>{title}</title>
   </head>
-  <body class="bg-slate-950 text-slate-100 m-auto max-w-3xl">
+  <body
+    class="bg-slate-950 text-slate-100 m-auto w-full px-4 sm:px-0 sm:w-5/6 max-w-screen-lg lg:max-w-3xl"
+  >
     <NavBar />
     <main class="my-9">
       <slot />

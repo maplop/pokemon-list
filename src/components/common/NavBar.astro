@@ -1,6 +1,8 @@
 ---
 import { Image } from "astro:assets";
 import pokemonImg from "../../assets/pokemonImg.png";
+import Menu from "./Menu";
+
 const links = [
   { href: "/", text: "Inicio" },
   { href: "/pokemons/1", text: "Todos" },
@@ -15,7 +17,7 @@ const currentPath = Astro.url.pathname;
   defer></script>
 <div class="flex justify-between items-center w-full text-white pt-4">
   <Image src={pokemonImg} alt="pokemon-img" width={200} />
-  <nav class="flex justify-center items-center gap-1.5 pb-4">
+  <nav class="hidden sm:flex justify-center items-center gap-1.5 pb-4">
     {
       links.map((link) => (
         <a
@@ -30,4 +32,7 @@ const currentPath = Astro.url.pathname;
       ))
     }
   </nav>
+  <div class="block sm:hidden">
+    <Menu client:load />
+  </div>
 </div>

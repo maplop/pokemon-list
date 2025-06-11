@@ -11,8 +11,6 @@ export const getStaticPaths = (async ({ paginate }) => {
 }) satisfies GetStaticPaths;
 
 const { page } = Astro.props;
-
-export const prerender = true;
 ---
 
 <MainLayout title="Pokémons">
