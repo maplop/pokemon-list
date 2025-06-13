@@ -19,7 +19,7 @@ const HeroCarousel = () => {
   const [, setInit] = useState();
 
   return (
-    <div className="relative">
+    <div className="flex flex-1 h-[calc(100vh-125px)] relative">
       <div className="absolute z-50 top-0 left-0 w-full h-full flex flex-col justify-center items-center text-white text-center px-4 bg-black/40">
         <h1 className="text-3xl md:text-5xl font-bold drop-shadow-lg">
           Explora el mundo Pokémon
@@ -59,7 +59,7 @@ const HeroCarousel = () => {
           disableOnInteraction: false,
         }}
         onInit={() => setInit(true)}
-        className="flex justify-center items-center h-[calc(100vh-190px)] rounded-xl overflow-hidden"
+        className="flex justify-center items-center rounded-xl overflow-hidden"
         style={{
           "--swiper-pagination-color": " #f8bf3a",
           "--swiper-pagination-bullet-inactive-color": "#999999",
