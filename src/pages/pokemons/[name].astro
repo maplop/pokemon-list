@@ -1,11 +1,12 @@
 ---
 import type { GetStaticPaths } from "astro";
-import { Icon } from "astro-icon/components";
+import { POKEAPI_BASE_URL } from "@utils/constants";
 import MainLayout from "@layouts/MainLayout.astro";
-import PokemonCard from "@components/PokemonCard.astro";
+import PokemonDetails from "@components/Pokemons/PokemonDetails.astro";
+import type { PokemonResponse } from "src/interfaces/pokemon";
 
 export const getStaticPaths = (async () => {
-  const resp = await fetch("https://pokeapi.co/api/v2/pokemon?limit=151");
+  const resp = await fetch("https://pokeapi.co/api/v2/pokemon?limit=501");
   const { results } = (await resp.json()) as PokemonResponse;
 
   return results.map((pokemon) => ({
@@ -16,98 +17,11 @@ export const getStaticPaths = (async () => {
 
 const { name } = Astro.params;
 const { pokemon } = Astro.props;
-
-const id = pokemon.url.split("/").at(-2);
-const audioSrc = `https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/${id}.ogg`;
-const imgSrc = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
 ---
 
 <MainLayout
-  title=`Pokemon ${id}-${name}`
+  title=`Pokemon ${pokemon.name}`
   description=`Información sobre el pokemon ${name}`
-  image={imgSrc}
 >
-  <section>
-    <button
-      type="button"
-      onclick="
-      if (history.length > 1) {
-        history.back();
-      } else {
-        location.href = '/pokemons/1';
-      }
-    "
-      class="px-4 py-2 mt-2 text-sm font-semibold text-white bg-blue-700 rounded-lg cursor-pointer hover:bg-blue-600"
-    >
-      ← Regresar
-    </button>
-    <h1>{id} {name}</h1>
-    <button id="btn-favorite" data-name={name} data-id={id}>
-      <Icon name={"heart-empty"} data-empty />
-      <Icon class={"hidden"} name={"heart-full"} data-full />
-    </button>
-    <PokemonCard pokemon={pokemon} isBig />
-    <audio controls class="mt-2">
-      <source src={audioSrc} type="audio/ogg" />
-    </audio>
-  </section>
+  <PokemonDetails pokemon={pokemon} />
 </MainLayout>
-
-<script>
-  interface FavoritePokemon {
-    name: string;
-    id: string;
-  }
-
-  const handlePageLoad = () => {
-    let favoritePokemons: FavoritePokemon[] = JSON.parse(
-      localStorage.getItem("favorites") ?? "[]"
-    );
-
-    const btnFavorite = document.querySelector(
-      "#btn-favorite"
-    ) as HTMLButtonElement;
-
-    const heartEmpty = btnFavorite.querySelector("[data-empty]") as HTMLElement;
-    const heartFull = btnFavorite.querySelector("[data-full]") as HTMLElement;
-
-    if (!btnFavorite) return;
-    const { name, id } = btnFavorite.dataset;
-    const isFavorite = favoritePokemons.some((fav) => fav.name === name);
-
-    if (isFavorite) {
-      heartEmpty.classList.add("hidden");
-      heartFull.classList.remove("hidden");
-    }
-
-    const toggleFavorite = () => {
-      const isFavorite = favoritePokemons.some((fav) => fav.name === name);
-      favoritePokemons = favoritePokemons.filter((fav) => fav.name !== name);
-      if (isFavorite) {
-      } else if (id && name) {
-        favoritePokemons.push({ id: id, name: name });
-      }
-
-      localStorage.setItem("favorites", JSON.stringify(favoritePokemons));
-    };
-
-    btnFavorite.addEventListener("click", () => {
-      heartEmpty.classList.toggle("hidden");
-      heartFull.classList.toggle("hidden");
-      toggleFavorite();
-    });
-
-    btnFavorite.addEventListener("click", () => {
-      console.log("Name y id --- ", name, id);
-    });
-  };
-
-  document.addEventListener("astro:page-load", handlePageLoad);
-</script>
-
-<style>
-  @reference "@styles/global.css";
-  #btn-favorite {
-    @apply hover:animate-pulse;
-  }
-</style>

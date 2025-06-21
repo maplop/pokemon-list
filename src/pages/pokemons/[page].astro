@@ -1,11 +1,12 @@
 ---
 import type { GetStaticPaths } from "astro";
 import MainLayout from "@layouts/MainLayout.astro";
-import PokemonCard from "@components/PokemonCard.astro";
+import PokemonCard from "@components/Pokemons/PokemonCard.astro";
 import TitlePage from "@components/common/TitlePage.astro";
+import type { PokemonResponse } from "src/interfaces/pokemon";
 
 export const getStaticPaths = (async ({ paginate }) => {
-  const resp = await fetch("https://pokeapi.co/api/v2/pokemon?limit=151");
+  const resp = await fetch("https://pokeapi.co/api/v2/pokemon?limit=501");
   const { results } = (await resp.json()) as PokemonResponse;
   return paginate(results, { pageSize: 15 });
 }) satisfies GetStaticPaths;
@@ -25,7 +26,9 @@ const { page } = Astro.props;
     <a class:list={["btn", { disabled: !page.url.prev }]} href={page.url.prev}>
       Anteriores
     </a>
-    <span class="font-bold">{`Página ${page.currentPage}`}</span>
+    <span class="font-bold"
+      >{`Página ${page.currentPage}/${page.lastPage}`}</span
+    >
     <a class:list={["btn", { disabled: !page.url.next }]} href={page.url.next}
       >Siguientes</a
     >

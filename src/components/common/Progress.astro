@@ -1,0 +1,16 @@
+---
+interface Props {
+  value: number; // porcentaje: entre 0 y 100
+  className?: string;
+}
+
+const { value, className = "" } = Astro.props;
+---
+
+<div class={`w-full bg-blue-950  rounded-full overflow-hidden ${className}`}>
+  <div
+    class="h-full bg-yellow-400 transition-all duration-300 ease-in-out"
+    style={`width: ${Math.min(value, 100)}%`}
+  >
+  </div>
+</div>

@@ -1,0 +1,192 @@
+---
+import type { Pokemon, PokemonDetails } from "src/interfaces/pokemon";
+import { Icon } from "astro-icon/components";
+import Progress from "@components/common/Progress.astro";
+import Chip from "@components/common/Chip.astro";
+import { MdKeyboardBackspace } from "react-icons/md";
+
+interface Props {
+  pokemon: Pokemon;
+}
+const { pokemon } = Astro.props;
+
+const resp = await fetch(pokemon.url);
+const fullPokemon = (await resp.json()) as PokemonDetails;
+---
+
+<section>
+  <button
+    type="button"
+    onclick="
+if (history.length > 1) {
+  history.back();
+} else {
+  location.href = '/pokemons/1';
+}
+"
+    class="flex items-center gap-1.5 py-2 text-lg font-medium text-blue-700 hover:text-blue-600 cursor-pointer"
+  >
+    <MdKeyboardBackspace size={24} />
+    Regresar
+  </button>
+  <div class="grid gap-9 sm:grid-cols-2">
+    <!-- Columna izquierda: información principal -->
+    <div>
+      <!-- Cabecera con nombre y número del Pokémon -->
+      <div class="flex items-center justify-between">
+        <div class="flex items-end gap-2">
+          <h1 class="text-3xl capitalize font-bold leading-none">
+            {pokemon.name}
+          </h1>
+          <div class="text-[24px] font-medium text-white/50 leading-none">
+            #{String(fullPokemon.id).padStart(3, "0")}
+          </div>
+        </div>
+
+        <button
+          id="btn-favorite"
+          data-name={fullPokemon.name}
+          data-id={fullPokemon.id}
+          class="text-3xl cursor-pointer"
+        >
+          <Icon name={"heart-empty"} data-empty />
+          <Icon class={"hidden"} name={"heart-full"} data-full />
+        </button>
+      </div>
+      <!-- Imagen del Pokémon (usa la versión oficial si está disponible) -->
+      <div class="m-auto my-2">
+        <img
+          src={fullPokemon.sprites.other["official-artwork"].front_default ||
+            fullPokemon.sprites.front_default}
+          alt=`${fullPokemon.name}-img`
+          transition:name={`${fullPokemon.name}-img`}
+          class="object-contain"
+        />
+      </div>
+      <!-- Chips de tipos del Pokémon -->
+      <div class="flex justify-center gap-2">
+        {
+          fullPokemon.types.map((type) => (
+            <div class="flex items-center gap-1.5">
+              <Chip type={type.type.name} />
+            </div>
+          ))
+        }
+      </div>
+    </div>
+
+    <!-- Columna derecha: información adicional -->
+    <div>
+      <!-- Información Física -->
+      <div>
+        <h3 class="text-lg font-medium">Información Física</h3>
+        <div class="grid grid-cols-2">
+          <div>
+            <div class="font-light text-white/80">Altura</div>
+            <div class="font-medium">{fullPokemon.height} m</div>
+          </div>
+          <div>
+            <div class="font-light text-white/80">Peso</div>
+            <div class="font-medium">{fullPokemon.weight} kg</div>
+          </div>
+        </div>
+      </div>
+
+      <hr class="my-3 text-white/30" />
+
+      <!-- Habilidades -->
+      <div class="pb-2">
+        <h3 class="text-lg font-medium">Habilidades</h3>
+        <div class="flex items-center gap-1.5 mt-2">
+          {
+            fullPokemon.abilities.map((ability) => (
+              <div class="text-sm bg-blue-950 px-2.5 py-1.5 leading-none rounded-xl">
+                {ability.ability.name}
+              </div>
+            ))
+          }
+        </div>
+      </div>
+
+      <hr class="my-3 text-white/30" />
+
+      <!-- Estadísticas Base -->
+      <div>
+        <h3 class="text-lg font-medium">Estadísticas Base</h3>
+        <div class="flex flex-col gap-1.5 mt-2">
+          {
+            fullPokemon.stats.map((stat) => (
+              <div>
+                <div class="flex justify-between items-center mb-1">
+                  <span class="text-sm capitalize font-medium">
+                    {stat.stat.name.replace("-", " ")}
+                  </span>
+                  <span class="text-sm font-bold">{stat.base_stat}</span>
+                </div>
+                <Progress
+                  value={(stat.base_stat / 255) * 100}
+                  className="h-2"
+                />
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  interface FavoritePokemon {
+    id: number;
+    name: string;
+  }
+
+  const handlePageLoad = () => {
+    let favoritePokemons: FavoritePokemon[] = JSON.parse(
+      localStorage.getItem("favorites") ?? "[]"
+    );
+
+    const btnFavorite = document.querySelector(
+      "#btn-favorite"
+    ) as HTMLButtonElement;
+
+    const heartEmpty = btnFavorite.querySelector("[data-empty]") as HTMLElement;
+    const heartFull = btnFavorite.querySelector("[data-full]") as HTMLElement;
+
+    if (!btnFavorite) return;
+    const { name, id } = btnFavorite.dataset;
+    const isFavorite = favoritePokemons.some((fav) => fav.name === name);
+
+    if (isFavorite) {
+      heartEmpty.classList.add("hidden");
+      heartFull.classList.remove("hidden");
+    }
+
+    const toggleFavorite = () => {
+      const isFavorite = favoritePokemons.some((fav) => fav.name === name);
+      favoritePokemons = favoritePokemons.filter((fav) => fav.name !== name);
+      if (isFavorite) {
+      } else if (id && name) {
+        favoritePokemons.push({ id: Number(id), name });
+      }
+
+      localStorage.setItem("favorites", JSON.stringify(favoritePokemons));
+    };
+
+    btnFavorite.addEventListener("click", () => {
+      heartEmpty.classList.toggle("hidden");
+      heartFull.classList.toggle("hidden");
+      toggleFavorite();
+    });
+  };
+
+  document.addEventListener("astro:page-load", handlePageLoad);
+</script>
+
+<style>
+  @reference "@styles/global.css";
+  #btn-favorite {
+    @apply hover:animate-pulse;
+  }
+</style>
