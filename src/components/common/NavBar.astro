@@ -9,6 +9,13 @@ const links = [
   { href: "/favoritos", text: "Favoritos" },
 ];
 
+const isActive = (href: string) => {
+  if (href === "/pokemons/1") {
+    return Astro.url.pathname.startsWith("/pokemons");
+  }
+  return Astro.url.pathname === href;
+};
+
 const currentPath = Astro.url.pathname;
 ---
 
@@ -23,7 +30,7 @@ const currentPath = Astro.url.pathname;
         <a
           class:list={[
             "px-4 py-2 mt-2 text-sm font-semibold  text-white hover:bg-blue-700 focus:bg-blue-700 rounded-lg",
-            { "bg-blue-700": currentPath === link.href },
+            { "bg-blue-700": isActive(link.href) },
           ]}
           href={link.href}
         >
