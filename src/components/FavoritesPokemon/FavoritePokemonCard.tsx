@@ -19,6 +19,7 @@ const FavoritePokemonCard = ({ pokemon, refreshFavorites }: FavoritePokemonCardP
           className="h-28"
           src={imgSrc}
           alt={`${pokemon.name}-img`}
+          style={{ viewTransitionName: `${pokemon.name}-img` }}
         />
         <span className="capitalize">{pokemon.name}</span>
       </a>
