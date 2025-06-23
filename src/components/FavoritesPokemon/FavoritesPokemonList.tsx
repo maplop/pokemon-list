@@ -1,31 +1,39 @@
-import { useState, useEffect } from "react";
-import type { Pokemon } from "src/interfaces/pokemon";
+import { useEffect, useState } from "react";
+import type { FavoritePokemon } from "src/interfaces/pokemon";
+import { getFavorites } from "@utils/favorites";
+import FavoriteButton from "@components/common/FavoriteButton";
+import FavoritePokemonCard from "./FavoritePokemonCard";
 
-const PokemonList = () => {
-  const getLocalStoragePokemons = (): Pokemon[] => {
-    const raw = localStorage.getItem("favorites");
-    return raw ? JSON.parse(raw) : [];
+const FavoritesPokemonList = () => {
+
+  const [favorites, setFavorites] = useState<FavoritePokemon[]>(getFavorites());
+
+  const refreshFavorites = () => {
+    setFavorites(getFavorites());
   };
 
-  const [pokemons, setPokemons] = useState<Pokemon[]>([]);
-
-  useEffect(() => {
-    const data = getLocalStoragePokemons();
-    setPokemons(data);
-  }, []);
-
   return (
-    <section
-      aria-label="Listado de Pokémons"
-      className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mt-4"
-    >
-      {pokemons.map((pokemon) => (
-        <div key={pokemon.id}>
-
+    <div>
+      {favorites.length > 0 ? (
+        <section
+          aria-label="Listado de Pokémons"
+          className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mt-4"
+        >
+          {favorites.map((pokemon) => (
+            <div key={pokemon.id}>
+              <FavoritePokemonCard pokemon={pokemon} refreshFavorites={refreshFavorites} />
+            </div>
+          ))}
+        </section>
+      ) : (
+        <div className="flex justify-center items-center h-[200px] mt-4">
+          <span className="text-xl text-center text-white/60">
+            No tienes pokemons en tu lista de favoritos 😞
+          </span>
         </div>
-      ))}
-    </section>
+      )}
+    </div>
   );
 };
 
-export default PokemonList;
+export default FavoritesPokemonList;

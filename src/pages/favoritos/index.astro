@@ -1,8 +1,10 @@
 ---
 import MainLayout from "@layouts/MainLayout.astro";
 import TitlePage from "@components/common/TitlePage.astro";
+import FavoritesPokemonList from "@components/FavoritesPokemon/FavoritesPokemonList";
 ---
 
 <MainLayout title="Favoritos">
   <TitlePage title="Favoritos" />
+  <FavoritesPokemonList client:only="react" />
 </MainLayout>

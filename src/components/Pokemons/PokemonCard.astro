@@ -1,5 +1,6 @@
 ---
 import type { Pokemon } from "src/interfaces/pokemon";
+
 interface Props {
   pokemon: Pokemon;
 }
@@ -11,7 +12,7 @@ const imgSrc = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites
 
 <a
   href=`/pokemons/${pokemon.name}`
-  class="flex flex-col justify-center items-center rounded-xl border-2 p-2 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:shadow-white/10"
+  class="flex flex-col justify-center items-center rounded-xl border-2 p-2 transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
 >
   <img
     class="h-28"

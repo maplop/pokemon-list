@@ -1,9 +1,9 @@
 ---
 import type { Pokemon, PokemonDetails } from "src/interfaces/pokemon";
-import { Icon } from "astro-icon/components";
 import Progress from "@components/common/Progress.astro";
 import Chip from "@components/common/Chip.astro";
 import { MdKeyboardBackspace } from "react-icons/md";
+import FavoriteButton from "@components/common/FavoriteButton";
 
 interface Props {
   pokemon: Pokemon;
@@ -42,16 +42,10 @@ if (history.length > 1) {
             #{String(fullPokemon.id).padStart(3, "0")}
           </div>
         </div>
-
-        <button
-          id="btn-favorite"
-          data-name={fullPokemon.name}
-          data-id={fullPokemon.id}
-          class="text-3xl cursor-pointer"
-        >
-          <Icon name={"heart-empty"} data-empty />
-          <Icon class={"hidden"} name={"heart-full"} data-full />
-        </button>
+        <FavoriteButton
+          client:only="react"
+          pokemon={{ id: String(fullPokemon.id), name: fullPokemon.name }}
+        />
       </div>
       <!-- Imagen del Pokémon (usa la versión oficial si está disponible) -->
       <div class="m-auto my-2">
@@ -135,58 +129,3 @@ if (history.length > 1) {
     </div>
   </div>
 </section>
-
-<script>
-  interface FavoritePokemon {
-    id: number;
-    name: string;
-  }
-
-  const handlePageLoad = () => {
-    let favoritePokemons: FavoritePokemon[] = JSON.parse(
-      localStorage.getItem("favorites") ?? "[]"
-    );
-
-    const btnFavorite = document.querySelector(
-      "#btn-favorite"
-    ) as HTMLButtonElement;
-
-    const heartEmpty = btnFavorite.querySelector("[data-empty]") as HTMLElement;
-    const heartFull = btnFavorite.querySelector("[data-full]") as HTMLElement;
-
-    if (!btnFavorite) return;
-    const { name, id } = btnFavorite.dataset;
-    const isFavorite = favoritePokemons.some((fav) => fav.name === name);
-
-    if (isFavorite) {
-      heartEmpty.classList.add("hidden");
-      heartFull.classList.remove("hidden");
-    }
-
-    const toggleFavorite = () => {
-      const isFavorite = favoritePokemons.some((fav) => fav.name === name);
-      favoritePokemons = favoritePokemons.filter((fav) => fav.name !== name);
-      if (isFavorite) {
-      } else if (id && name) {
-        favoritePokemons.push({ id: Number(id), name });
-      }
-
-      localStorage.setItem("favorites", JSON.stringify(favoritePokemons));
-    };
-
-    btnFavorite.addEventListener("click", () => {
-      heartEmpty.classList.toggle("hidden");
-      heartFull.classList.toggle("hidden");
-      toggleFavorite();
-    });
-  };
-
-  document.addEventListener("astro:page-load", handlePageLoad);
-</script>
-
-<style>
-  @reference "@styles/global.css";
-  #btn-favorite {
-    @apply hover:animate-pulse;
-  }
-</style>

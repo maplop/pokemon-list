@@ -3,6 +3,10 @@ export interface Pokemon {
   url: string;
 }
 
+export interface FavoritePokemon {
+  id: string;
+  name: string;
+}
 export interface PokemonDetails {
   id: number;
   name: string;
